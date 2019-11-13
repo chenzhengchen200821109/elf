@@ -1,8 +1,7 @@
 # 在main函数执行之前发生什么？
 我们可以先看一张流程图:
 ![](https://raw.githubusercontent.com/chenzhengchen200821109/elf/master/rt/rt0.png)  
-**NOTE**:gcc 4.7以下版本下才有__do_global_ctors_aux，而4.7及以上版本  
-已经使用__init_array_start替代
+**NOTE**:gcc 4.7以下版本下才有__do_global_ctors_aux，而4.7及以上版本已经使用__init_array_start替代
 ## 1. _start函数 
 ```
  080482f0 <_start>:
@@ -55,7 +54,7 @@ value | __libc_start_main arg | 含义
 %esi | argc | argc off of the stack.
 0x80483ed | int (*main)(int, char**, char**) | main of our program called by __libc_start_main.
 
-经过动态连接器(dynamic linker)解析后确定的__libc_start_main函数最终地址。此函数主要作用为:
+经过动态连接器(dynamic linker)解析后确定的__libc_start_main函数最终地址。此函数主要作用为:  
 (1)安全审查  
 (2)设置线程  
 (3)调用at_exit注册fini和rtld_fini函数  
