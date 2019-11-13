@@ -1,7 +1,8 @@
 # 在main函数执行之前发生什么？
 我们可以先看一张流程图:
 ![ ](/home/chenzheng/Documents/elf/rt/rt0.png  "流程图")
-
+NOTE:gcc 4.7以下版本下才有__do_global_ctors_aux，而4.7及以上版本  
+已经使用__init_array_start替代
 ## 1. _start函数 
 ```
  080482f0 <_start>:
@@ -100,7 +101,7 @@ __libc_csu_init (int argc, char **argv, char **envp)
       (*__init_array_start [i]) (argc, argv, envp);
 }
 ```
-其中_init()函数由编译器gcc定义。
+其中**_init()函数由编译器gcc定义**。
 ```
 08049000 <_init>:
  8049000:	53                   	push   %ebx
@@ -116,6 +117,14 @@ __libc_csu_init (int argc, char **argv, char **envp)
  8049022:	c3                   	ret    
 
 ```
+__gmon_start()函数用来profiling。  
+现在我们来看看C++中全局对象的构造。由以下代码完成。
+```
+  const size_t size = __init_array_end - __init_array_start;
+  for (size_t i = 0; i < size; i++)
+      (*__init_array_start [i]) (argc, argv, envp);
+```
+其中__init_array_end和__init_array_start由linker提供。
 (5)调用main函数
 ```
 /* Run the program.  */
