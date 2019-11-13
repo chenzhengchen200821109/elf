@@ -1,6 +1,6 @@
 # 在main函数执行之前发生什么？
 我们可以先看一张流程图:
-!(https://raw.githubusercontent.com/chenzhengchen200821109/elf/master/rt/rt0.png)
+![](https://raw.githubusercontent.com/chenzhengchen200821109/elf/master/rt/rt0.png)
 NOTE:gcc 4.7以下版本下才有__do_global_ctors_aux，而4.7及以上版本  
 已经使用__init_array_start替代
 ## 1. _start函数 
