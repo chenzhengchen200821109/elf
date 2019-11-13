@@ -1,7 +1,7 @@
 # 在main函数执行之前发生什么？
 我们可以先看一张流程图:
-![](https://raw.githubusercontent.com/chenzhengchen200821109/elf/master/rt/rt0.png)
-NOTE:gcc 4.7以下版本下才有__do_global_ctors_aux，而4.7及以上版本  
+![](https://raw.githubusercontent.com/chenzhengchen200821109/elf/master/rt/rt0.png)  
+**NOTE**:gcc 4.7以下版本下才有__do_global_ctors_aux，而4.7及以上版本  
 已经使用__init_array_start替代
 ## 1. _start函数 
 ```
@@ -28,11 +28,11 @@ NOTE:gcc 4.7以下版本下才有__do_global_ctors_aux，而4.7及以上版本
   804831c:   66 90                   xchg   %ax,%ax
   804831e:   66 90                   xchg   %ax,%ax
 ```
-1.初始化寄存器%ebp，这是由ABI所规定的。
-2.由于在_start之前，OS将argc，argv及envp入栈，因此寄存器%esi保存argc。
-3.同理，寄存器%ecx保存argv。此时%esp指向argv。
-4.使%esp保持16字节对齐。
-5.接下来为调用__libc_start_main作准备。
+1.初始化寄存器%ebp，这是由ABI所规定的。  
+2.由于在_start之前，OS将argc，argv及envp入栈，因此寄存器%esi保存argc。  
+3.同理，寄存器%ecx保存argv。此时%esp指向argv。  
+4.使%esp保持16字节对齐。  
+5.接下来为调用__libc_start_main作准备。  
 
 ## 2. __libc_start_main函数
 首先看一下__libc_start_main函数的原型。
@@ -56,9 +56,9 @@ value | __libc_start_main arg | 含义
 0x80483ed | int (*main)(int, char**, char**) | main of our program called by __libc_start_main.
 
 经过动态连接器(dynamic linker)解析后确定的__libc_start_main函数最终地址。此函数主要作用为:
-(1)安全审查
-(2)设置线程
-(3)调用at_exit注册fini和rtld_fini函数
+(1)安全审查  
+(2)设置线程  
+(3)调用at_exit注册fini和rtld_fini函数  
 ```
 /* Register the destructor of the program, if any.  */
   if (fini)
@@ -124,13 +124,13 @@ __gmon_start()函数用来profiling。
   for (size_t i = 0; i < size; i++)
       (*__init_array_start [i]) (argc, argv, envp);
 ```
-其中__init_array_end和__init_array_start由linker提供。
-(5)调用main函数
+其中__init_array_end和__init_array_start由linker提供。  
+(5)调用main函数  
 ```
 /* Run the program.  */
       result = main (argc, argv, __environ MAIN_AUXVEC_PARAM);
 ```
-(6)调用exit函数
+(6)调用exit函数  
 ```
 exit (result);
 ```
